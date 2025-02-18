@@ -1,0 +1,16 @@
+.players {
+  width: 100%;
+  max-width: 800px;
+  text-align: left;
+
+  table,
+  th,
+  td {
+    border: 1px solid;
+  }
+  tr {
+    &[data-is-me="true"] {
+      background-color: lightgreen;
+    }
+  }
+}

@@ -1,3 +1,3 @@
-# Flamingo
+# Firebase React Chat
 
-dancing
+Firebase React Chat
