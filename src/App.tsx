@@ -1,7 +1,8 @@
-import Game from "./game/game";
+import { Chat } from "./pages/chat/chat";
+import "./App.css";
 
 function App() {
-  return <Game />;
+  return <Chat />;
 }
 
 export default App;

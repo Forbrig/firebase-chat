@@ -16,7 +16,7 @@ const roomId = "chat-room";
 const roomRef = doc(collection(db, "rooms"), roomId);
 const playersRef = collection(db, "players");
 
-export const startGame = async () => {
+export const startChat = async () => {
   onSnapshot(roomRef, async (snapshot) => {
     const data = snapshot.data();
     if (data?.offer && !peerConnection.currentRemoteDescription) {
@@ -39,7 +39,7 @@ export const startGame = async () => {
   await setDoc(roomRef, { offer });
 };
 
-export const joinGame = async (playerName: string): Promise<string> => {
+export const joinChat = async (playerName: string): Promise<string> => {
   // Check if the name is already taken
   const playersSnapshot = await getDocs(playersRef);
   const nameTaken = playersSnapshot.docs.some(
