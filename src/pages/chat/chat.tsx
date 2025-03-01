@@ -1,28 +1,22 @@
 import { useEffect, useState } from "react";
-import { collection, DocumentData, onSnapshot } from "firebase/firestore";
 
-import { joinChat } from "../../utils/network";
-import { db } from "../../firebase/firebase";
-import "../../utils/cleanup";
+import { useNetwork } from "../../hooks/useNetwork";
 
 import { SigninModal } from "../../components/SigninModal";
 
 import styles from "./chat.module.scss";
 
 export const Chat = () => {
-  const [players, setPlayers] = useState<DocumentData[]>([]);
-  const [playerId, setPlayerId] = useState<string | null>(null);
+  const { joinChat, user, users } = useNetwork();
+
   const [isSigninModalOpen, setIsSigninModalOpen] = useState(false);
 
   const tryJoinGame = async (name: string) => {
     try {
-      const playerId = await joinChat(name);
-      setPlayerId(playerId);
+      await joinChat(name);
     } catch (error) {
       alert((error as Error).message);
-
-      const name = prompt("Enter your name:");
-      name && tryJoinGame(name);
+      setIsSigninModalOpen(true);
     }
   };
 
@@ -32,17 +26,9 @@ export const Chat = () => {
   };
 
   useEffect(() => {
-    if (!playerId) {
+    if (!user) {
       setIsSigninModalOpen(true);
     }
-
-    // Listen for player updates
-    const unsubscribe = onSnapshot(collection(db, "players"), (snapshot) => {
-      const playersList = snapshot.docs.map((doc) => doc.data());
-      setPlayers(playersList);
-    });
-
-    return () => unsubscribe(); // Cleanup listener
   }, []);
 
   return (
@@ -60,11 +46,13 @@ export const Chat = () => {
           </thead>
 
           <tbody>
-            {players.map((player, index) => (
-              <tr key={index} data-is-me={player.uuid === playerId}>
-                <td>{player.name}</td>
-                <td>{new Date(player.joinedAt).toLocaleString()}</td>
-                <td>{new Date(player.lastActive).toLocaleString()}</td>
+            {users.map((_user, index) => (
+              <tr key={index} data-is-me={user?.uuid === _user.uuid}>
+                <td>
+                  {_user.name} {_user.uuid === user?.uuid && "(You)"}
+                </td>
+                <td>{new Date(_user.joinedAt).toLocaleString()}</td>
+                <td>{new Date(_user.lastActive).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
